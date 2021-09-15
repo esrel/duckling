@@ -371,15 +371,30 @@ ruleIntervalDash = Rule
 
 ruleIntervalMax :: Rule
 ruleIntervalMax = Rule
-  { name = "under/less/lower/no more than <amount-of-money>"
+  { name = "below/under/less/lower/no more than <amount-of-money>"
   , pattern =
-    [ regex "under|at most|(less|lower|not? more) than"
+    [ regex "below|under|at most|(less|lower|not? more) than"
     , Predicate isSimpleAmountOfMoney
     ]
   , prod = \tokens -> case tokens of
       (_:
        Token AmountOfMoney AmountOfMoneyData{TAmountOfMoney.value = Just to,
                   TAmountOfMoney.currency = c}:
+       _) -> Just . Token AmountOfMoney . withMax to $ currencyOnly c
+      _ -> Nothing
+  }
+
+ruleIntervalMaxSuff :: Rule
+ruleIntervalMaxSuff = Rule
+  { name = "<amount-of-money> or less"
+  , pattern =
+    [ Predicate isSimpleAmountOfMoney
+    , regex "or (less|below|under)"
+    ]
+  , prod = \tokens -> case tokens of
+      (Token AmountOfMoney AmountOfMoneyData{TAmountOfMoney.value = Just to,
+                  TAmountOfMoney.currency = c}:
+       _:
        _) -> Just . Token AmountOfMoney . withMax to $ currencyOnly c
       _ -> Nothing
   }
@@ -398,6 +413,22 @@ ruleIntervalMin = Rule
        _) -> Just . Token AmountOfMoney . withMin to $ currencyOnly c
       _ -> Nothing
   }
+
+ruleIntervalMinSuff :: Rule
+ruleIntervalMinSuff = Rule
+  { name = "<amount-of-money> or more"
+  , pattern =
+    [ Predicate isSimpleAmountOfMoney
+    , regex "or (more|above|higher)"
+    ]
+  , prod = \tokens -> case tokens of
+      (Token AmountOfMoney AmountOfMoneyData{TAmountOfMoney.value = Just to,
+                  TAmountOfMoney.currency = c}:
+       _:
+       _) -> Just . Token AmountOfMoney . withMin to $ currencyOnly c
+      _ -> Nothing
+  }
+
 
 rules :: [Rule]
 rules =
@@ -418,7 +449,9 @@ rules =
   , ruleIntervalBetweenNumeral
   , ruleIntervalBetween
   , ruleIntervalMax
+  , ruleIntervalMaxSuff
   , ruleIntervalMin
+  , ruleIntervalMinSuff
   , ruleIntervalNumeralDash
   , ruleIntervalDash
   , ruleKopiyka
