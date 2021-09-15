@@ -371,7 +371,7 @@ ruleIntervalDash = Rule
 
 ruleIntervalMax :: Rule
 ruleIntervalMax = Rule
-  { name = "under/less/lower/no more than <amount-of-money>"
+  { name = "below/under/less/lower/no more than <amount-of-money>"
   , pattern =
     [ regex "below|under|at most|(less|lower|not? more) than"
     , Predicate isSimpleAmountOfMoney
@@ -383,7 +383,7 @@ ruleIntervalMax = Rule
        _) -> Just . Token AmountOfMoney . withMax to $ currencyOnly c
       _ -> Nothing
   }
-  
+
 ruleIntervalMaxSuff :: Rule
 ruleIntervalMaxSuff = Rule
   { name = "<amount-of-money> or less"
@@ -392,9 +392,9 @@ ruleIntervalMaxSuff = Rule
     , regex "or (less|below|under)"
     ]
   , prod = \tokens -> case tokens of
-      (_:
-       Token AmountOfMoney AmountOfMoneyData{TAmountOfMoney.value = Just to,
+      (Token AmountOfMoney AmountOfMoneyData{TAmountOfMoney.value = Just to,
                   TAmountOfMoney.currency = c}:
+       _:
        _) -> Just . Token AmountOfMoney . withMax to $ currencyOnly c
       _ -> Nothing
   }
@@ -422,9 +422,9 @@ ruleIntervalMinSuff = Rule
     , regex "or (more|above|higher)"
     ]
   , prod = \tokens -> case tokens of
-      (_:
-       Token AmountOfMoney AmountOfMoneyData{TAmountOfMoney.value = Just to,
+      (Token AmountOfMoney AmountOfMoneyData{TAmountOfMoney.value = Just to,
                   TAmountOfMoney.currency = c}:
+       _:
        _) -> Just . Token AmountOfMoney . withMin to $ currencyOnly c
       _ -> Nothing
   }
@@ -448,10 +448,10 @@ rules =
   , ruleIntersectXCents
   , ruleIntervalBetweenNumeral
   , ruleIntervalBetween
-  , ruleIntervalMax,
+  , ruleIntervalMax
   , ruleIntervalMaxSuff
   , ruleIntervalMin
-  , ruleIntervalMinSuff,
+  , ruleIntervalMinSuff
   , ruleIntervalNumeralDash
   , ruleIntervalDash
   , ruleKopiyka
