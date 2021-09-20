@@ -373,7 +373,7 @@ ruleIntervalMax :: Rule
 ruleIntervalMax = Rule
   { name = "below/under/less/lower/no more than <amount-of-money>"
   , pattern =
-    [ regex "below|under|at most|(less|lower|not? more) than"
+    [ regex "below|under|at most until|at most to|at most|maximum of|maximum|max of|of max|max|(less|fewer|lower|not? more|higher|greater) than"
     , Predicate isSimpleAmountOfMoney
     ]
   , prod = \tokens -> case tokens of
@@ -389,7 +389,7 @@ ruleIntervalMaxSuff = Rule
   { name = "<amount-of-money> or less"
   , pattern =
     [ Predicate isSimpleAmountOfMoney
-    , regex "or (less|below|under)"
+    , regex "or (less|below|under)|at most|(maximum|max)"
     ]
   , prod = \tokens -> case tokens of
       (Token AmountOfMoney AmountOfMoneyData{TAmountOfMoney.value = Just to,
@@ -403,7 +403,7 @@ ruleIntervalMin :: Rule
 ruleIntervalMin = Rule
   { name = "over/above/at least/more than <amount-of-money>"
   , pattern =
-    [ regex "over|above|at least|(more|not? less) than"
+    [ regex "over|above|minimum of|minimum|min of|min|(at least until|at least)|(no? greater|no? higher|more|not? less|no? less) than"
     , Predicate isSimpleAmountOfMoney
     ]
   , prod = \tokens -> case tokens of
@@ -416,10 +416,10 @@ ruleIntervalMin = Rule
 
 ruleIntervalMinSuff :: Rule
 ruleIntervalMinSuff = Rule
-  { name = "<amount-of-money> or more"
+  { name = "<amount-of-money> or more |at least"
   , pattern =
     [ Predicate isSimpleAmountOfMoney
-    , regex "or (more|above|higher)"
+    , regex "higher than|or (more|above|higher|over)|at least|(minimum|min)"
     ]
   , prod = \tokens -> case tokens of
       (Token AmountOfMoney AmountOfMoneyData{TAmountOfMoney.value = Just to,
@@ -428,7 +428,6 @@ ruleIntervalMinSuff = Rule
        _) -> Just . Token AmountOfMoney . withMin to $ currencyOnly c
       _ -> Nothing
   }
-
 
 rules :: [Rule]
 rules =
